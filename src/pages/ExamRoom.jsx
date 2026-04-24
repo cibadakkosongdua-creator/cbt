@@ -756,11 +756,10 @@ const ExamRoom = ({
 
       const { score, correct, total, earnedXp, newLevel, isLulus, id: examResultId } = rpcResult;
       
+      const isLevelUp = newLevel > user.level;
+
       // Update local state user
       updateUser({ xp: user.xp + earnedXp, level: newLevel });
-
-      // Selebrasi Confetti
-      const isLevelUp = newLevel > user.level;
       if (score >= 100 || isLevelUp) {
         confetti({
           particleCount: 150,
