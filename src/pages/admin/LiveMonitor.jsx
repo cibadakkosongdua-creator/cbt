@@ -46,6 +46,13 @@ const LiveMonitor = () => {
     };
   }, []);
 
+  const getIdleSeconds = (session) => {
+    const lastActive = session.last_active || session.started_at;
+    if (!lastActive) return 999999;
+    const last = new Date(lastActive).getTime();
+    return Math.floor((now - last) / 1000);
+  };
+
   const getStatus = (studentId) => {
     const isOnline = Object.values(presenceData).some(p => p.some(u => u.user_id === studentId));
     if (isOnline) return "online";
@@ -53,9 +60,7 @@ const LiveMonitor = () => {
     const session = sessions.find(s => s.student_id === studentId);
     if (!session) return "offline";
 
-    const lastActive = session.last_active || session.started_at;
-    const last = new Date(lastActive).getTime();
-    const idleSec = Math.floor((now - last) / 1000);
+    const idleSec = getIdleSeconds(session);
     
     if (idleSec > 120) return "offline";
     if (idleSec > 45) return "idle";
