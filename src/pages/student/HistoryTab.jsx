@@ -49,9 +49,6 @@ const HistoryTab = ({ history, loading, examConfig }) => {
         </div>
       ) : (
         <>
-          {/* Score trend chart (shown only when >= 2 exams) */}
-          <ScoreTrendChart history={history} examConfig={examConfig} />
-
           {/* Card list */}
           <div className="space-y-3">
             {history.map((h, idx) => {
