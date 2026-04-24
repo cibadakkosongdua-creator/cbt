@@ -14,7 +14,7 @@
   "crons": [
     {
       "path": "/api/auto-close-exams",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 0 * * *"
     }
   ]
 }
