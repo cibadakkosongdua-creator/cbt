@@ -7,9 +7,8 @@ const AnswerArea = ({ question, answers, setAnswers }) => {
 
   if (currentQ.type === "PG") {
     return (
-      <div className="space-y-2.5">
+      <div className="space-y-3">
         {currentQ.options?.map((opt, idx) => {
-          // Jika opsi berupa objek (hasil shuffle), ambil originalIdx-nya
           const originalIdx = typeof opt === 'object' && opt !== null ? opt.originalIdx : idx;
           const selected = answers[currentQ.id] === originalIdx;
           const label = String.fromCharCode(65 + idx);
@@ -18,27 +17,32 @@ const AnswerArea = ({ question, answers, setAnswers }) => {
             <button
               key={idx}
               onClick={() => setAnswers({ ...answers, [currentQ.id]: originalIdx })}
-              className={`flex w-full items-center gap-4 rounded-2xl border-2 p-4 text-left transition-all ${
+              className={`group flex w-full items-center gap-3 sm:gap-4 rounded-2xl border-2 p-3 sm:p-4 text-left transition-all duration-200 ${
                 selected
-                  ? "border-indigo-600 bg-indigo-50/50 shadow-sm"
-                  : "border-slate-100 hover:border-indigo-200 hover:bg-slate-50/50"
+                  ? "border-indigo-500 bg-gradient-to-br from-indigo-50 to-violet-50 shadow-lg shadow-indigo-100"
+                  : "border-slate-100 bg-white hover:border-indigo-200 hover:bg-slate-50 active:scale-[0.98]"
               }`}
             >
               <div
-                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg font-black transition-colors ${
+                className={`flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl text-base sm:text-lg font-black transition-all duration-200 ${
                   selected
-                    ? "bg-indigo-600 text-white"
-                    : "bg-slate-100 text-slate-400"
+                    ? "bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-md"
+                    : "bg-slate-100 text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-500"
                 }`}
               >
                 {label}
               </div>
               <div
-                className={`text-sm font-bold leading-relaxed ${
+                className={`flex-1 text-sm sm:text-[15px] font-semibold leading-relaxed ${
                   selected ? "text-indigo-900" : "text-slate-600"
                 }`}
                 dangerouslySetInnerHTML={{ __html: typeof opt === 'object' && opt !== null ? (opt.text || "") : String(opt || "") }}
               />
+              {selected && (
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center">
+                  <i className="fas fa-circle-check text-indigo-500 text-sm" />
+                </div>
+              )}
             </button>
           );
         })}
@@ -66,7 +70,7 @@ const AnswerArea = ({ question, answers, setAnswers }) => {
     };
 
     return (
-      <div className="space-y-2.5">
+      <div className="space-y-3">
         {currentQ.options?.map((opt, idx) => {
           const originalIdx = typeof opt === 'object' && opt !== null ? opt.originalIdx : idx;
           const selected = selectedOptions.includes(originalIdx);
@@ -76,23 +80,23 @@ const AnswerArea = ({ question, answers, setAnswers }) => {
             <button
               key={idx}
               onClick={() => toggleOption(originalIdx)}
-              className={`flex w-full items-center gap-4 rounded-2xl border-2 p-4 text-left transition-all ${
+              className={`group flex w-full items-center gap-3 sm:gap-4 rounded-2xl border-2 p-3 sm:p-4 text-left transition-all duration-200 ${
                 selected
-                  ? "border-indigo-600 bg-indigo-50/50 shadow-sm"
-                  : "border-slate-100 hover:border-indigo-200 hover:bg-slate-50/50"
+                  ? "border-indigo-500 bg-gradient-to-br from-indigo-50 to-violet-50 shadow-lg shadow-indigo-100"
+                  : "border-slate-100 bg-white hover:border-indigo-200 hover:bg-slate-50 active:scale-[0.98]"
               }`}
             >
               <div
-                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg font-black transition-colors ${
+                className={`flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl text-base sm:text-lg font-black transition-all duration-200 ${
                   selected
-                    ? "bg-indigo-600 text-white"
-                    : "bg-slate-100 text-slate-400"
+                    ? "bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-md"
+                    : "bg-slate-100 text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-500"
                 }`}
               >
                 {selected ? <i className="fas fa-check" /> : label}
               </div>
               <div
-                className={`text-sm font-bold leading-relaxed ${
+                className={`flex-1 text-sm sm:text-[15px] font-semibold leading-relaxed ${
                   selected ? "text-indigo-900" : "text-slate-600"
                 }`}
                 dangerouslySetInnerHTML={{ __html: typeof opt === 'object' && opt !== null ? (opt.text || "") : String(opt || "") }}
