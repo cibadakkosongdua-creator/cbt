@@ -743,13 +743,13 @@ const ExamRoom = ({
 
       // Panggil RPC submit_exam (Atomic Submission)
       const { data: rpcResult, error: rpcError } = await supabase.rpc("submit_exam", {
-        p_student_id: user.id,
-        p_mapel: mapel,
-        p_mode: mode,
-        p_answers: answers,
-        p_doubtful: doubtful,
-        p_timeLeft: timeLeft,
-        p_durationLimit: initialDurationSecRef.current,
+        p_student_id: user.id.toString(),
+        p_mapel: mapel.toString(),
+        p_mode: mode.toString(),
+        p_answers: answers || {},
+        p_doubtful: doubtful || {},
+        p_timeLeft: parseInt(timeLeft || 0),
+        p_durationLimit: parseInt(initialDurationSecRef.current || 0),
       });
 
       if (rpcError) throw rpcError;
