@@ -99,6 +99,33 @@ const LiveMonitor = () => {
   }, [sessions, kelasFilter]);
 
   // ─── Actions ────────────────────────────────────────────
+  const handleAddTime = async (session) => {
+    const { value: minutes, isConfirmed } = await Swal.fire({
+      title: "Tambah Waktu Ujian",
+      input: "number",
+      inputLabel: "Jumlah menit yang ditambahkan",
+      inputPlaceholder: "Contoh: 5",
+      showCancelButton: true,
+      confirmButtonText: "Tambah",
+      cancelButtonText: "Batal",
+      preConfirm: (val) => {
+        if (!val || val <= 0) Swal.showValidationMessage("Masukkan angka lebih dari 0");
+        return val;
+      },
+    });
+    if (isConfirmed && minutes) {
+      try {
+        const { error } = await supabase.from("sessions").update({
+          time_left: (session.time_left || 0) + parseInt(minutes) * 60,
+        }).eq("id", session.id);
+        if (error) throw error;
+        toastSuccess(`Waktu ${session.student_name} +${minutes} menit`);
+      } catch (err) {
+        toastError("Gagal: " + err.message);
+      }
+    }
+  };
+
   const handleForceFinish = async (session) => {
     const idleSec = getIdleSeconds(session);
     const isOffline = idleSec > 120;
