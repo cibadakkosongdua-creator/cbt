@@ -33,7 +33,7 @@ const AnswerArea = ({ question, answers, setAnswers }) => {
                 {label}
               </div>
               <div
-                className={`flex-1 min-w-0 text-sm font-bold leading-relaxed ${
+                className={`html-content flex-1 min-w-0 break-words text-sm font-bold leading-relaxed ${
                   selected ? "text-indigo-900" : "text-slate-600"
                 }`}
                 dangerouslySetInnerHTML={{ __html: typeof opt === 'object' && opt !== null ? (opt.text || "") : String(opt || "") }}
@@ -91,7 +91,7 @@ const AnswerArea = ({ question, answers, setAnswers }) => {
                 {selected ? <i className="fas fa-check" /> : label}
               </div>
               <div
-                className={`flex-1 min-w-0 text-sm font-bold leading-relaxed ${
+                className={`html-content flex-1 min-w-0 break-words text-sm font-bold leading-relaxed ${
                   selected ? "text-indigo-900" : "text-slate-600"
                 }`}
                 dangerouslySetInnerHTML={{ __html: typeof opt === 'object' && opt !== null ? (opt.text || "") : String(opt || "") }}
