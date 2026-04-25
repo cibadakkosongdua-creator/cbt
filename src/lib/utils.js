@@ -14,9 +14,11 @@ export const renderMath = (element) => {
     const walkAndWrap = (node) => {
       if (node.nodeType === 3) { // Text node
         const text = node.textContent;
-        // Regex to find \command{...} or \command
+        // Regex to find \command{...}{...} or \command
         // Matches \frac{...}{...}, \sqrt{...}, \alpha, \times, etc.
-        const latexRegex = /(\\[a-zA-Z]+(?:\{[^{}]*\}|(?:\s|$)|[^a-zA-Z\{\s]))/g;
+        // The (?:\{[^{}]*\})* part captures ZERO or more {…} argument groups,
+        // so \frac{1}{3} is matched as a whole instead of just \frac{1}.
+        const latexRegex = /(\\[a-zA-Z]+(?:\{[^{}]*\})*)/g;
         
         // Check if it's already inside a delimiter in the parent's HTML (rough check)
         // A better way is to check if it's already rendered or in a .ql-formula
