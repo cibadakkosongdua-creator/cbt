@@ -7,6 +7,7 @@ import renderMathInElement from "katex/dist/contrib/auto-render";
 // Render KaTeX in an element
 export const renderMath = (element) => {
   if (!element) return;
+  console.log('[renderMath] Called on element:', element.className, element.innerHTML?.substring(0, 100));
   try {
     // 1. Pre-process: Wrap standalone LaTeX commands that are NOT inside delimiters
     // This regex looks for common LaTeX commands like \frac, \sqrt, \times, etc.
@@ -31,11 +32,13 @@ export const renderMath = (element) => {
         }
 
         if (latexRegex.test(text)) {
+          console.log('[walkAndWrap] Found LaTeX in text:', text);
           // Wrap with \( \) if not already wrapped
           // This is a simple heuristic: if the text contains \ but not $ or \(
           if (!text.includes('$') && !text.includes('\\(')) {
             const wrappedText = text.replace(latexRegex, (match) => `\\(${match}\\)`);
             if (wrappedText !== text) {
+              console.log('[walkAndWrap] Wrapped:', text, '->', wrappedText);
               node.textContent = wrappedText;
             }
           }
