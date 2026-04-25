@@ -23,7 +23,6 @@ window.katex = katex;
 
 const ManageQuestions = () => {
   const { user } = useAuthStore();
-  const previewRef = useMath([previewQuestion]);
   const [questions, setQuestions] = useState([]);
   const [filteredQuestions, setFilteredQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -33,6 +32,7 @@ const ManageQuestions = () => {
   const [selectedDifficulty, setSelectedDifficulty] = useState("all");
   const [selectedMapel, setSelectedMapel] = useState("all");
   const [previewQuestion, setPreviewQuestion] = useState(null);
+  const previewRef = useMath([previewQuestion]);
   const [showForm, setShowForm] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [aiLoading, setAiLoading] = useState(false);

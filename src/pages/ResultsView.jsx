@@ -15,9 +15,9 @@ import { useMath } from "../lib/utils";
 
 const ResultsView = ({ resultId }) => {
   const navigate = useNavigate();
-  const containerRef = useMath();
   const [result, setResult] = useState(null);
   const [questions, setQuestions] = useState([]);
+  const containerRef = useMath([result, questions]);
   const [loading, setLoading] = useState(true);
   const [expandedQuestion, setExpandedQuestion] = useState(null);
   const [examConfig, setExamConfig] = useState(null);
