@@ -7,7 +7,13 @@ import renderMathInElement from "katex/dist/contrib/auto-render";
 // Render KaTeX in an element
 export const renderMath = (element) => {
   if (!element) return;
-  console.log('[renderMath] Called on element:', element.className, element.innerHTML?.substring(0, 100));
+  
+  // Check if already rendered (has katex elements) - skip to avoid re-render issues
+  const hasKatex = element.querySelector('.katex');
+  if (hasKatex) {
+    return;
+  }
+  
   try {
     // 1. Pre-process: Find and render standalone LaTeX commands directly
     // This is more reliable than wrapping with delimiters
@@ -27,12 +33,10 @@ export const renderMath = (element) => {
         }
 
         if (latexRegex.test(text)) {
-          console.log('[walkAndRender] Found LaTeX in text:', text);
           // Reset lastIndex after test() so matchAll() works correctly
           latexRegex.lastIndex = 0;
           // Render each match directly using katex.render
           const matches = [...text.matchAll(latexRegex)];
-          console.log('[walkAndRender] Matches:', matches);
           if (matches.length > 0) {
             // Create a document fragment to hold the result
             const fragment = document.createDocumentFragment();
@@ -51,9 +55,8 @@ export const renderMath = (element) => {
                   throwOnError: false,
                   displayMode: false
                 });
-                console.log('[walkAndRender] Rendered:', match[0]);
               } catch (e) {
-                console.error('[walkAndRender] Render error:', e);
+                console.error("KaTeX render error:", e);
                 span.textContent = match[0]; // Fallback to raw text
               }
               fragment.appendChild(span);
@@ -77,10 +80,7 @@ export const renderMath = (element) => {
     // Process text nodes to render naked LaTeX directly
     walkAndRender(element);
 
-    console.log('[renderMath] After walkAndRender, HTML (first 500 chars):', element.innerHTML?.substring(0, 500));
-
     // 2. Render standard LaTeX with delimiters (for any that were already wrapped)
-    console.log('[renderMath] Calling renderMathInElement...');
     renderMathInElement(element, {
       delimiters: [
         { left: "$$", right: "$$", display: true },
@@ -91,7 +91,6 @@ export const renderMath = (element) => {
       ],
       throwOnError: false,
     });
-    console.log('[renderMath] renderMathInElement completed');
 
     // 3. Render Quill formulas (class="ql-formula")
     const quillFormulas = element.querySelectorAll('.ql-formula');
@@ -121,7 +120,7 @@ export const useMath = (dependencies = []) => {
     if (ref.current) {
       renderMath(ref.current);
     }
-  }, dependencies);
+  }); // Run on every render
   return ref;
 };
 

@@ -4,7 +4,6 @@ import AnswerArea from "./AnswerArea";
 import { useMath } from "../../lib/utils";
 
 const QuestionCard = ({ question, fontSize, doubtful, answers, setAnswers }) => {
-  console.log('[QuestionCard] Render, question.id:', question?.id, 'answers:', answers);
   const containerRef = useMath([question, answers]);
 
   if (!question) return null;
