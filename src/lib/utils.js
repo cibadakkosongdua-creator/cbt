@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import katex from "katex";
 import renderMathInElement from "katex/dist/contrib/auto-render";
 
@@ -116,9 +116,16 @@ export const renderMath = (element) => {
 // Hook for rendering math in a component
 export const useMath = (dependencies = []) => {
   const ref = useRef(null);
-  useEffect(() => {
+  const lastContentRef = useRef('');
+  
+  useLayoutEffect(() => {
     if (ref.current) {
-      renderMath(ref.current);
+      const currentHTML = ref.current.innerHTML;
+      // Only re-render if content has changed
+      if (currentHTML !== lastContentRef.current) {
+        renderMath(ref.current);
+        lastContentRef.current = ref.current.innerHTML;
+      }
     }
   }, dependencies);
   return ref;
