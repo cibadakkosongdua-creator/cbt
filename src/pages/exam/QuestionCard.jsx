@@ -4,7 +4,7 @@ import AnswerArea from "./AnswerArea";
 import { useMath } from "../../lib/utils";
 
 const QuestionCard = ({ question, fontSize, doubtful, answers, setAnswers }) => {
-  const containerRef = useMath([question, answers]);
+  const containerRef = useMath([question]);
 
   if (!question) return null;
   const currentType = getQuestionTypeMeta(question.type);
