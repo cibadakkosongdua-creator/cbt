@@ -9,20 +9,15 @@ export const renderMath = (element) => {
   if (!element) return;
   console.log('[renderMath] Called on element:', element.className, element.innerHTML?.substring(0, 100));
   try {
-    // 1. Pre-process: Wrap standalone LaTeX commands that are NOT inside delimiters
-    // This regex looks for common LaTeX commands like \frac, \sqrt, \times, etc.
-    // that are not already wrapped in $ or \(
-    const walkAndWrap = (node) => {
+    // 1. Pre-process: Find and render standalone LaTeX commands directly
+    // This is more reliable than wrapping with delimiters
+    const walkAndRender = (node) => {
       if (node.nodeType === 3) { // Text node
         const text = node.textContent;
         // Regex to find \command{...}{...} or \command
-        // Matches \frac{...}{...}, \sqrt{...}, \alpha, \times, etc.
-        // The (?:\{[^{}]*\})* part captures ZERO or more {…} argument groups,
-        // so \frac{1}{3} is matched as a whole instead of just \frac{1}.
         const latexRegex = /(\\[a-zA-Z]+(?:\{[^{}]*\})*)/g;
         
-        // Check if it's already inside a delimiter in the parent's HTML (rough check)
-        // A better way is to check if it's already rendered or in a .ql-formula
+        // Check if it's already inside a rendered element
         if (node.parentElement && (
           node.parentElement.classList.contains('katex') || 
           node.parentElement.closest('.katex') ||
@@ -32,29 +27,56 @@ export const renderMath = (element) => {
         }
 
         if (latexRegex.test(text)) {
-          console.log('[walkAndWrap] Found LaTeX in text:', text);
-          // Wrap with \( \) if not already wrapped
-          // This is a simple heuristic: if the text contains \ but not $ or \(
-          if (!text.includes('$') && !text.includes('\\(')) {
-            const wrappedText = text.replace(latexRegex, (match) => `\\(${match}\\)`);
-            if (wrappedText !== text) {
-              console.log('[walkAndWrap] Wrapped:', text, '->', wrappedText);
-              node.textContent = wrappedText;
+          console.log('[walkAndRender] Found LaTeX in text:', text);
+          // Render each match directly using katex.render
+          const matches = [...text.matchAll(latexRegex)];
+          if (matches.length > 0) {
+            // Create a document fragment to hold the result
+            const fragment = document.createDocumentFragment();
+            let lastIndex = 0;
+            
+            matches.forEach((match) => {
+              // Add text before the match
+              if (match.index > lastIndex) {
+                fragment.appendChild(document.createTextNode(text.substring(lastIndex, match.index)));
+              }
+              
+              // Create a span for the rendered math
+              const span = document.createElement('span');
+              try {
+                katex.render(match[0], span, {
+                  throwOnError: false,
+                  displayMode: false
+                });
+                console.log('[walkAndRender] Rendered:', match[0]);
+              } catch (e) {
+                console.error('[walkAndRender] Render error:', e);
+                span.textContent = match[0]; // Fallback to raw text
+              }
+              fragment.appendChild(span);
+              lastIndex = match.index + match[0].length;
+            });
+            
+            // Add remaining text
+            if (lastIndex < text.length) {
+              fragment.appendChild(document.createTextNode(text.substring(lastIndex)));
             }
+            
+            // Replace the text node with the fragment
+            node.parentNode.replaceChild(fragment, node);
           }
         }
       } else if (node.nodeType === 1 && !node.classList.contains('katex')) {
-        Array.from(node.childNodes).forEach(walkAndWrap);
+        Array.from(node.childNodes).forEach(walkAndRender);
       }
     };
     
-    // Process text nodes to wrap naked LaTeX
-    walkAndWrap(element);
+    // Process text nodes to render naked LaTeX directly
+    walkAndRender(element);
 
-    console.log('[renderMath] After walkAndWrap, HTML (first 500 chars):', element.innerHTML?.substring(0, 500));
-    console.log('[renderMath] Full HTML:', element.innerHTML);
+    console.log('[renderMath] After walkAndRender, HTML (first 500 chars):', element.innerHTML?.substring(0, 500));
 
-    // 2. Render standard LaTeX with delimiters
+    // 2. Render standard LaTeX with delimiters (for any that were already wrapped)
     console.log('[renderMath] Calling renderMathInElement...');
     renderMathInElement(element, {
       delimiters: [
@@ -67,7 +89,6 @@ export const renderMath = (element) => {
       throwOnError: false,
     });
     console.log('[renderMath] renderMathInElement completed');
-    console.log('[renderMath] After renderMathInElement, HTML (first 500 chars):', element.innerHTML?.substring(0, 500));
 
     // 3. Render Quill formulas (class="ql-formula")
     const quillFormulas = element.querySelectorAll('.ql-formula');
