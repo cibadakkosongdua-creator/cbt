@@ -8,7 +8,45 @@ import renderMathInElement from "katex/dist/contrib/auto-render";
 export const renderMath = (element) => {
   if (!element) return;
   try {
-    // 1. Render standard LaTeX with delimiters
+    // 1. Pre-process: Wrap standalone LaTeX commands that are NOT inside delimiters
+    // This regex looks for common LaTeX commands like \frac, \sqrt, \times, etc.
+    // that are not already wrapped in $ or \(
+    const walkAndWrap = (node) => {
+      if (node.nodeType === 3) { // Text node
+        const text = node.textContent;
+        // Regex to find \command{...} or \command
+        // Matches \frac{...}{...}, \sqrt{...}, \alpha, \times, etc.
+        const latexRegex = /(\\[a-zA-Z]+(?:\{[^{}]*\}|(?:\s|$)|[^a-zA-Z\{\s]))/g;
+        
+        // Check if it's already inside a delimiter in the parent's HTML (rough check)
+        // A better way is to check if it's already rendered or in a .ql-formula
+        if (node.parentElement && (
+          node.parentElement.classList.contains('katex') || 
+          node.parentElement.closest('.katex') ||
+          node.parentElement.classList.contains('ql-formula')
+        )) {
+          return;
+        }
+
+        if (latexRegex.test(text)) {
+          // Wrap with \( \) if not already wrapped
+          // This is a simple heuristic: if the text contains \ but not $ or \(
+          if (!text.includes('$') && !text.includes('\\(')) {
+            const wrappedText = text.replace(latexRegex, (match) => `\\(${match}\\)`);
+            if (wrappedText !== text) {
+              node.textContent = wrappedText;
+            }
+          }
+        }
+      } else if (node.nodeType === 1 && !node.classList.contains('katex')) {
+        Array.from(node.childNodes).forEach(walkAndWrap);
+      }
+    };
+    
+    // Process text nodes to wrap naked LaTeX
+    walkAndWrap(element);
+
+    // 2. Render standard LaTeX with delimiters
     renderMathInElement(element, {
       delimiters: [
         { left: "$$", right: "$$", display: true },
@@ -20,7 +58,7 @@ export const renderMath = (element) => {
       throwOnError: false,
     });
 
-    // 2. Render Quill formulas (class="ql-formula")
+    // 3. Render Quill formulas (class="ql-formula")
     const quillFormulas = element.querySelectorAll('.ql-formula');
     quillFormulas.forEach(formula => {
       const latex = formula.getAttribute('data-value') || formula.textContent;
