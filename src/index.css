@@ -606,6 +606,40 @@
 .ql-editor span {
     background-color: transparent !important;
 }
+
+/* ════════════════════════════════════════
+   MOBILE SAFE AREA
+════════════════════════════════════════ */
+/* Add padding for mobile dock/bottom navigation */
+@media (max-width: 768px) {
+  html {
+    scroll-padding-bottom: 40px;
+  }
+
+  body {
+    padding-bottom: 40px;
+    min-height: 100vh;
+  }
+
+  /* Ensure main containers have bottom padding */
+  main,
+  .container,
+  .page-container,
+  .space-y-6 {
+    padding-bottom: 40px;
+  }
+
+  /* Fix for all scrollable containers */
+  .overflow-y-auto,
+  .overflow-auto {
+    padding-bottom: 40px;
+  }
+
+  /* Fix for fixed bottom elements */
+  .fixed-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
 .html-content p { margin-bottom: 0.5rem; }
 .html-content p:last-child { margin-bottom: 0; }
 .html-content ul {
