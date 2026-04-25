@@ -181,6 +181,7 @@ const ExamRoom = ({
             passingGrade: data.passing_grade || data.passingGrade || DEFAULT_EXAM_CONFIG.passingGrade,
             showResults: data.show_results !== undefined ? data.show_results : (data.showResults !== undefined ? data.showResults : DEFAULT_EXAM_CONFIG.showResults),
             randomizeQuestions: data.randomize_questions !== undefined ? data.randomize_questions : (data.randomizeQuestions !== undefined ? data.randomizeQuestions : DEFAULT_EXAM_CONFIG.randomizeQuestions),
+            antiCheatEnabled: data.anti_cheat_enabled !== undefined ? data.anti_cheat_enabled : (data.antiCheatEnabled !== undefined ? data.antiCheatEnabled : DEFAULT_EXAM_CONFIG.antiCheatEnabled),
             startAt: data.start_at || data.startAt || DEFAULT_EXAM_CONFIG.startAt,
             endAt: data.end_at || data.endAt || DEFAULT_EXAM_CONFIG.endAt,
           });
@@ -531,6 +532,8 @@ const ExamRoom = ({
 
   // --- VISIBILITY WARNING & LOCK ---
   useEffect(() => {
+    if (!examConfig.antiCheatEnabled) return; // Skip if anti-cheat is disabled
+
     const onVisibility = async () => {
       if (document.visibilityState !== "visible") {
         if (!preview && user?.id) {
@@ -540,7 +543,7 @@ const ExamRoom = ({
               tab_switches: newVal,
               last_active: new Date().toISOString(),
             }).eq("id", user.id).then(() => {}).catch(() => {});
-            
+
             // Activate lock if switches >= 3
             if (newVal >= 3) {
               setLockTime(15); // Lock for 15 seconds
@@ -549,7 +552,7 @@ const ExamRoom = ({
             return newVal;
           });
         }
-        
+
         try {
           await Swal.fire({
             icon: "warning",
@@ -565,7 +568,7 @@ const ExamRoom = ({
     };
     document.addEventListener("visibilitychange", onVisibility);
     return () => document.removeEventListener("visibilitychange", onVisibility);
-  }, [preview, user?.id, playBeep]);
+  }, [preview, user?.id, playBeep, examConfig.antiCheatEnabled]);
 
   // Lock timer tick
   useEffect(() => {

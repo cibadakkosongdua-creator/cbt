@@ -589,6 +589,23 @@
 .html-content span[style*="background-color"] {
     background-color: transparent !important;
 }
+.html-content p[style*="background-color"] {
+    background-color: transparent !important;
+}
+.html-content div[style*="background-color"] {
+    background-color: transparent !important;
+}
+
+/* Clean up Quill editor background */
+.ql-editor {
+    background-color: white !important;
+}
+.ql-editor p {
+    background-color: transparent !important;
+}
+.ql-editor span {
+    background-color: transparent !important;
+}
 .html-content p { margin-bottom: 0.5rem; }
 .html-content p:last-child { margin-bottom: 0; }
 .html-content ul {

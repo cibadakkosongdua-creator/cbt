@@ -12,6 +12,7 @@ export const DEFAULT_EXAM_CONFIG = {
   showResults: true,
   randomizeQuestions: true,
   partialScoringPGK: false,
+  antiCheatEnabled: true,  // Anti-cheat tab switch detection
 };
 
 /** Standard list of Mapel (mata pelajaran) available in the system */

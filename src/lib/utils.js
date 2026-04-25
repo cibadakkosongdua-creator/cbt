@@ -20,12 +20,16 @@ export const renderMath = (element) => {
     const walkAndRender = (node) => {
       if (node.nodeType === 3) { // Text node
         const text = node.textContent;
-        // Regex to find \command{...}{...} or \command
-        const latexRegex = /(\\[a-zA-Z]+(?:\{[^{}]*\})*)/g;
-        
+        // Regex to find LaTeX patterns with context:
+        // 1. \command{...} like \frac{1}{3}, \sqrt{x}
+        // 2. [a-zA-Z0-9]^{...} for superscript like x^{2}, a^{n}
+        // 3. [a-zA-Z0-9]_{...} for subscript like H_{2}O
+        // 4. \command without braces like \alpha, \times, \div
+        const latexRegex = /(\\[a-zA-Z]+(?:\{[^{}]*\})*)|([a-zA-Z0-9]\^[^\\]?\{[^{}]*\})|([a-zA-Z0-9]_[^\\]?\{[^{}]*\})|(\\[a-zA-Z]+)/g;
+
         // Check if it's already inside a rendered element
         if (node.parentElement && (
-          node.parentElement.classList.contains('katex') || 
+          node.parentElement.classList.contains('katex') ||
           node.parentElement.closest('.katex') ||
           node.parentElement.classList.contains('ql-formula')
         )) {
@@ -41,13 +45,13 @@ export const renderMath = (element) => {
             // Create a document fragment to hold the result
             const fragment = document.createDocumentFragment();
             let lastIndex = 0;
-            
+
             matches.forEach((match) => {
               // Add text before the match
               if (match.index > lastIndex) {
                 fragment.appendChild(document.createTextNode(text.substring(lastIndex, match.index)));
               }
-              
+
               // Create a span for the rendered math
               const span = document.createElement('span');
               try {
@@ -62,12 +66,12 @@ export const renderMath = (element) => {
               fragment.appendChild(span);
               lastIndex = match.index + match[0].length;
             });
-            
+
             // Add remaining text
             if (lastIndex < text.length) {
               fragment.appendChild(document.createTextNode(text.substring(lastIndex)));
             }
-            
+
             // Replace the text node with the fragment
             node.parentNode.replaceChild(fragment, node);
           }

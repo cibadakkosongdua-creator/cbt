@@ -16,6 +16,7 @@ const ToggleSwitch = ({ checked, onChange, label, description, accentColor = "in
     emerald: { on: "bg-emerald-600", dot: "bg-white" },
     violet: { on: "bg-violet-600", dot: "bg-white" },
     amber: { on: "bg-amber-500", dot: "bg-white" },
+    rose: { on: "bg-rose-600", dot: "bg-white" },
   };
   const colors = colorMap[accentColor] || colorMap.indigo;
 
@@ -89,6 +90,7 @@ const Settings = ({ onPreview }) => {
             showResults: data.show_results,
             randomizeQuestions: data.randomize_questions,
             partialScoringPGK: data.partial_scoring_pgk,
+            antiCheatEnabled: data.anti_cheat_enabled !== undefined ? data.anti_cheat_enabled : true,
             startAt: data.start_at || "",
             endAt: data.end_at || "",
           };
@@ -189,6 +191,7 @@ const Settings = ({ onPreview }) => {
         show_results: config.showResults,
         randomize_questions: config.randomizeQuestions,
         partial_scoring_pgk: config.partialScoringPGK || false,
+        anti_cheat_enabled: config.antiCheatEnabled !== undefined ? config.antiCheatEnabled : true,
         start_at: config.startAt || null,
         end_at: config.endAt || null,
       };
@@ -389,6 +392,13 @@ const Settings = ({ onPreview }) => {
             label="Partial Scoring PGK"
             description="Soal Pilihan Ganda Kompleks mendapat nilai parsial jika sebagian jawaban benar"
             accentColor="amber"
+          />
+          <ToggleSwitch
+            checked={config.antiCheatEnabled !== undefined ? config.antiCheatEnabled : true}
+            onChange={(e) => setConfig({ ...config, antiCheatEnabled: e.target.checked })}
+            label="Anti-Cheat (Deteksi Tab Switch)"
+            description="Aktifkan deteksi saat siswa pindah tab/browser. 3x pindah tab akan dikunci 15 detik"
+            accentColor="rose"
           />
         </div>
       </SectionCard>

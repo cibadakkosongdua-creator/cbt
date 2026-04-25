@@ -198,14 +198,15 @@ CREATE TABLE IF NOT EXISTS settings (
   show_results BOOLEAN NOT NULL DEFAULT FALSE,
   randomize_questions BOOLEAN NOT NULL DEFAULT FALSE,
   partial_scoring_pgk BOOLEAN NOT NULL DEFAULT FALSE,
+  anti_cheat_enabled BOOLEAN NOT NULL DEFAULT TRUE, -- anti-cheat tab switch detection
   start_at TEXT,                                    -- datetime-local string
   end_at TEXT,                                      -- datetime-local string
   updated_at TIMESTAMPTZ DEFAULT now()
 );
 
 -- Insert baris default jika belum ada
-INSERT INTO settings (id, title, duration, token, is_active, exam_type, active_mapel, min_score, passing_grade, show_results, randomize_questions, partial_scoring_pgk)
-VALUES (1, 'Ujian CBT', 60, '', FALSE, 'MAPEL', 'IPAS', 70, 'C', FALSE, FALSE, FALSE)
+INSERT INTO settings (id, title, duration, token, is_active, exam_type, active_mapel, min_score, passing_grade, show_results, randomize_questions, partial_scoring_pgk, anti_cheat_enabled)
+VALUES (1, 'Ujian CBT', 60, '', FALSE, 'MAPEL', 'IPAS', 70, 'C', FALSE, FALSE, FALSE, TRUE)
 ON CONFLICT (id) DO NOTHING;
 
 -- Trigger auto-update updated_at
@@ -366,11 +367,30 @@ BEGIN
         IF LOWER(TRIM(v_user_ans->>0)) = LOWER(TRIM(v_q.answer->>0)) THEN
           v_correct := v_correct + 1;
         END IF;
-      -- JODOH / BS (Simplified for RPC)
-      ELSIF v_q.type IN ('JODOH', 'BS') THEN
+      -- JODOH Scoring
+      ELSIF v_q.type = 'JODOH' THEN
         IF v_user_ans::text = v_q.answer::text THEN
           v_correct := v_correct + 1;
         END IF;
+      -- BS Scoring (Benar/Salah)
+      ELSIF v_q.type = 'BS' THEN
+        DECLARE
+          v_bs_correct BOOLEAN := TRUE;
+          v_stmt RECORD;
+          v_idx INTEGER := 0;
+        BEGIN
+          -- Check each statement
+          FOR v_stmt IN SELECT * FROM jsonb_array_elements(v_q.statements) LOOP
+            IF (v_user_ans->>v_idx::text)::boolean IS DISTINCT FROM (v_stmt->>'isTrue')::boolean THEN
+              v_bs_correct := FALSE;
+              EXIT;
+            END IF;
+            v_idx := v_idx + 1;
+          END LOOP;
+          IF v_bs_correct THEN
+            v_correct := v_correct + 1;
+          END IF;
+        END;
       END IF;
     END IF;
   END LOOP;

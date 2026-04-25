@@ -9,6 +9,9 @@ const quillModules = {
     ['image', 'formula'],
     ['clean']
   ],
+  clipboard: {
+    matchVisual: false,
+  },
 };
 
 const quillOptionsModules = {
