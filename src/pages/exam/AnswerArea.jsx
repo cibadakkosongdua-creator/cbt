@@ -1,7 +1,7 @@
 import React from "react";
 import { playSound } from "../../lib/soundUtils";
 
-const AnswerArea = ({ question, answers, setAnswers }) => {
+const AnswerArea = ({ question, answers, setAnswers, fontSize = "text-base" }) => {
   const currentQ = question;
   if (!currentQ) return null;
 
@@ -33,7 +33,7 @@ const AnswerArea = ({ question, answers, setAnswers }) => {
                 {label}
               </div>
               <div
-                className={`html-content flex-1 min-w-0 break-words text-sm font-bold leading-relaxed ${
+                className={`html-content flex-1 min-w-0 break-words font-bold leading-relaxed ${fontSize} ${
                   selected ? "text-indigo-900" : "text-slate-600"
                 }`}
                 dangerouslySetInnerHTML={{ __html: typeof opt === 'object' && opt !== null ? (opt.text || "") : String(opt || "") }}
@@ -91,7 +91,7 @@ const AnswerArea = ({ question, answers, setAnswers }) => {
                 {selected ? <i className="fas fa-check" /> : label}
               </div>
               <div
-                className={`html-content flex-1 min-w-0 break-words text-sm font-bold leading-relaxed ${
+                className={`html-content flex-1 min-w-0 break-words font-bold leading-relaxed ${fontSize} ${
                   selected ? "text-indigo-900" : "text-slate-600"
                 }`}
                 dangerouslySetInnerHTML={{ __html: typeof opt === 'object' && opt !== null ? (opt.text || "") : String(opt || "") }}
@@ -107,7 +107,7 @@ const AnswerArea = ({ question, answers, setAnswers }) => {
   if (currentQ.type === "ISIAN") {
     return (
       <textarea
-        className="w-full rounded-2xl border-2 border-slate-200 bg-white p-4 text-sm font-medium text-slate-900 outline-none placeholder:text-slate-400 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50 transition resize-none"
+        className={`w-full rounded-2xl border-2 border-slate-200 bg-white p-4 font-medium text-slate-900 outline-none placeholder:text-slate-400 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50 transition resize-none ${fontSize}`}
         rows={4}
         placeholder="Ketik jawaban di sini..."
         value={answers[currentQ.id] || ""}
@@ -151,12 +151,12 @@ const AnswerArea = ({ question, answers, setAnswers }) => {
               </div>
               <div className="flex flex-1 items-center gap-3">
                 <div
-                  className="flex-1 html-content text-sm font-medium text-slate-800"
+                  className={`flex-1 html-content font-medium text-slate-800 ${fontSize}`}
                   dangerouslySetInnerHTML={{ __html: typeof pair.left === 'object' && pair.left !== null ? (pair.left.text || "") : String(pair.left || "") }}
                 />
                 <i className="fas fa-arrows-left-right text-xs text-slate-300 shrink-0" />
                 <div
-                  className="flex-1 html-content text-sm text-slate-600"
+                  className={`flex-1 html-content text-slate-600 ${fontSize}`}
                   dangerouslySetInnerHTML={{ __html: typeof pair.right === 'object' && pair.right !== null ? (pair.right.text || "") : String(pair.right || "") }}
                 />
               </div>
@@ -218,7 +218,7 @@ const AnswerArea = ({ question, answers, setAnswers }) => {
                     {idx + 1}
                   </span>
                   <div
-                    className="html-content flex-1 text-sm font-medium leading-relaxed text-slate-900"
+                    className={`html-content flex-1 font-medium leading-relaxed text-slate-900 ${fontSize}`}
                     dangerouslySetInnerHTML={{ __html: txt }}
                   />
                 </div>

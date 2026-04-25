@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import RichTextEditor from "../../ui/RichTextEditor";
+import { renderMath } from "../../lib/utils";
 
 const quillModules = {
   toolbar: [
@@ -156,6 +157,7 @@ const QuestionForm = ({
               }}
               placeholder="Wacana, cerita, atau teks pendukung..."
               className="w-full text-slate-900 border-none"
+              showLatexToolbar={true}
             />
           </div>
         </div>
@@ -205,6 +207,7 @@ const QuestionForm = ({
               }}
               placeholder="Tuliskan pertanyaan..."
               className="w-full text-slate-900 border-none"
+              showLatexToolbar={true}
             />
           </div>
         </div>
@@ -252,6 +255,7 @@ const QuestionForm = ({
                       }}
                       placeholder={`Pilihan ${String.fromCharCode(65 + idx)}`}
                       className="w-full text-slate-900"
+                      showLatexToolbar={true}
                     />
                   </div>
                 </div>
@@ -428,6 +432,98 @@ const QuestionForm = ({
             >
               <i className="fas fa-plus" /> Tambah Pernyataan
             </button>
+          </div>
+        )}
+
+        {/* PREVIEW */}
+        {(form.question || form.stimulus) && (
+          <div className="rounded-xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-blue-50 p-4">
+            <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-indigo-600">
+              Preview Soal
+            </label>
+            <div 
+              className="html-content text-sm leading-relaxed text-slate-800"
+              dangerouslySetInnerHTML={{ __html: form.stimulus || "" }}
+              ref={(el) => el && renderMath(el)}
+            />
+            {form.image && (
+              <img
+                src={form.image}
+                alt="Preview gambar"
+                className="max-h-40 w-auto rounded-lg object-contain mx-auto my-3"
+              />
+            )}
+            <div 
+              className="html-content text-base font-semibold leading-relaxed text-slate-900"
+              dangerouslySetInnerHTML={{ __html: form.question || "" }}
+              ref={(el) => el && renderMath(el)}
+            />
+            
+            {/* Preview Options untuk PG/PGK */}
+            {(form.type === "PG" || form.type === "PGK") && form.options && (
+              <div className="mt-4 space-y-2">
+                {form.options.map((opt, idx) => (
+                  <div key={idx} className="flex items-start gap-2 text-sm">
+                    <span className="font-bold text-indigo-600">{String.fromCharCode(65 + idx)}.</span>
+                    <div 
+                      className="html-content text-slate-700"
+                      dangerouslySetInnerHTML={{ __html: typeof opt === 'object' ? (opt.text || "") : String(opt || "") }}
+                      ref={(el) => el && renderMath(el)}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {/* Preview untuk ISIAN */}
+            {form.type === "ISIAN" && (
+              <div className="mt-4">
+                <div className="text-sm text-slate-600">
+                  <span className="font-semibold">Kunci Jawaban:</span> {form.answer || "-"}
+                </div>
+              </div>
+            )}
+            
+            {/* Preview untuk JODOH */}
+            {form.type === "JODOH" && form.pairs && (
+              <div className="mt-4 space-y-2">
+                {form.pairs.map((pair, idx) => (
+                  <div key={idx} className="flex items-center gap-2 text-sm">
+                    <span className="font-bold text-indigo-600">{idx + 1}.</span>
+                    <div 
+                      className="html-content text-slate-700"
+                      dangerouslySetInnerHTML={{ __html: typeof pair.left === 'object' ? (pair.left.text || "") : String(pair.left || "") }}
+                      ref={(el) => el && renderMath(el)}
+                    />
+                    <span className="text-slate-400">↔</span>
+                    <div 
+                      className="html-content text-slate-700"
+                      dangerouslySetInnerHTML={{ __html: typeof pair.right === 'object' ? (pair.right.text || "") : String(pair.right || "") }}
+                      ref={(el) => el && renderMath(el)}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {/* Preview untuk BS */}
+            {form.type === "BS" && form.statements && (
+              <div className="mt-4 space-y-2">
+                {form.statements.map((stmt, idx) => (
+                  <div key={idx} className="flex items-start gap-2 text-sm">
+                    <span className="font-bold text-indigo-600">{idx + 1}.</span>
+                    <div 
+                      className="html-content text-slate-700"
+                      dangerouslySetInnerHTML={{ __html: typeof stmt === 'object' ? (stmt.text || "") : String(stmt || "") }}
+                      ref={(el) => el && renderMath(el)}
+                    />
+                    <span className={`text-xs font-semibold ${stmt.isTrue ? "text-emerald-600" : "text-red-600"}`}>
+                      ({stmt.isTrue ? "Benar" : "Salah"})
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

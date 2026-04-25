@@ -585,6 +585,10 @@
     overflow-wrap: break-word;
     max-width: 100%;
 }
+/* Remove inline background colors from Quill */
+.html-content span[style*="background-color"] {
+    background-color: transparent !important;
+}
 .html-content p { margin-bottom: 0.5rem; }
 .html-content p:last-child { margin-bottom: 0; }
 .html-content ul {

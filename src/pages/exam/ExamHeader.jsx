@@ -51,7 +51,7 @@ const ExamHeader = ({
               className="hidden sm:flex h-8 w-8 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
               title="Ukuran teks"
             >
-              <i className="fas fa-text-height text-sm" />
+              <i className="fas fa-magnifying-glass-plus text-sm" />
             </button>
 
             {/* Reading Ruler */}

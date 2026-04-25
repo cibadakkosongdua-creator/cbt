@@ -328,6 +328,13 @@ const ExamRoom = ({
 
         setQuestions(data);
 
+        // Reset answers and doubtful when in preview mode
+        if (preview) {
+          setAnswers({});
+          setDoubtful({});
+          setCurrentIndex(0);
+        }
+
         // Tulis sesi live monitor (skip jika preview)
         if (!preview && user?.id) {
           supabase.from("sessions").upsert({

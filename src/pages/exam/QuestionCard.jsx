@@ -6,6 +6,14 @@ import { useMath } from "../../lib/utils";
 const QuestionCard = ({ question, fontSize, doubtful, answers, setAnswers }) => {
   const containerRef = useMath([question, answers]);
 
+  // Map fontSize to numeric values for AnswerArea
+  const fontSizeMap = {
+    "text-base": "text-sm",
+    "text-lg": "text-base",
+    "text-xl": "text-lg"
+  };
+  const answerFontSize = fontSizeMap[fontSize] || "text-base";
+
   if (!question) return null;
   const currentType = getQuestionTypeMeta(question.type);
 
@@ -41,7 +49,7 @@ const QuestionCard = ({ question, fontSize, doubtful, answers, setAnswers }) => 
               Teks Bacaan
             </div>
             <div
-              className="html-content text-sm leading-relaxed text-slate-700"
+              className={`html-content leading-relaxed text-slate-700 ${fontSize}`}
               dangerouslySetInnerHTML={{ __html: typeof question.stimulus === 'object' ? (question.stimulus?.text || "") : String(question.stimulus || "") }}
             />
           </div>
@@ -67,7 +75,7 @@ const QuestionCard = ({ question, fontSize, doubtful, answers, setAnswers }) => 
 
         {/* Answer area */}
         <div className="tour-answer">
-          <AnswerArea question={question} answers={answers} setAnswers={setAnswers} />
+          <AnswerArea question={question} answers={answers} setAnswers={setAnswers} fontSize={answerFontSize} />
         </div>
       </div>
     </div>
