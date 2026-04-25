@@ -51,7 +51,10 @@ export const renderMath = (element) => {
     // Process text nodes to wrap naked LaTeX
     walkAndWrap(element);
 
+    console.log('[renderMath] After walkAndWrap, HTML:', element.innerHTML?.substring(0, 200));
+
     // 2. Render standard LaTeX with delimiters
+    console.log('[renderMath] Calling renderMathInElement...');
     renderMathInElement(element, {
       delimiters: [
         { left: "$$", right: "$$", display: true },
@@ -62,6 +65,7 @@ export const renderMath = (element) => {
       ],
       throwOnError: false,
     });
+    console.log('[renderMath] renderMathInElement completed');
 
     // 3. Render Quill formulas (class="ql-formula")
     const quillFormulas = element.querySelectorAll('.ql-formula');
