@@ -28,8 +28,11 @@ export const renderMath = (element) => {
 
         if (latexRegex.test(text)) {
           console.log('[walkAndRender] Found LaTeX in text:', text);
+          // Reset lastIndex after test() so matchAll() works correctly
+          latexRegex.lastIndex = 0;
           // Render each match directly using katex.render
           const matches = [...text.matchAll(latexRegex)];
+          console.log('[walkAndRender] Matches:', matches);
           if (matches.length > 0) {
             // Create a document fragment to hold the result
             const fragment = document.createDocumentFragment();
