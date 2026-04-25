@@ -116,15 +116,20 @@ export const renderMath = (element) => {
 // Hook for rendering math in a component
 export const useMath = (dependencies = []) => {
   const ref = useRef(null);
-  const lastContentRef = useRef('');
+  const lastTextRef = useRef('');
   
   useLayoutEffect(() => {
     if (ref.current) {
-      const currentHTML = ref.current.innerHTML;
-      // Only re-render if content has changed
-      if (currentHTML !== lastContentRef.current) {
+      // Get text content without KaTeX elements for comparison
+      const clone = ref.current.cloneNode(true);
+      const katexElements = clone.querySelectorAll('.katex');
+      katexElements.forEach(el => el.remove());
+      const currentText = clone.textContent;
+      
+      // Only re-render if text content has changed
+      if (currentText !== lastTextRef.current) {
         renderMath(ref.current);
-        lastContentRef.current = ref.current.innerHTML;
+        lastTextRef.current = currentText;
       }
     }
   }, dependencies);
