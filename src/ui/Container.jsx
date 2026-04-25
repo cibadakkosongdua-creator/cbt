@@ -1,9 +1,13 @@
-import React from "react";
+import React, { forwardRef } from "react";
 
-export default function Container({ children, className = "" }) {
+const Container = forwardRef(({ children, className = "" }, ref) => {
   return (
-    <div className={`mx-auto w-full max-w-6xl px-4 md:px-6 ${className}`}>
+    <div ref={ref} className={`mx-auto w-full max-w-6xl px-4 md:px-6 ${className}`}>
       {children}
     </div>
   );
-}
+});
+
+Container.displayName = "Container";
+
+export default Container;

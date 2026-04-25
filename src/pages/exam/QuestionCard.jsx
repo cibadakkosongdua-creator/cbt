@@ -1,13 +1,19 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { getQuestionTypeMeta } from "../../lib/uiMeta";
 import AnswerArea from "./AnswerArea";
+import { useMath } from "../../lib/utils";
 
 const QuestionCard = ({ question, fontSize, doubtful, answers, setAnswers }) => {
+  const containerRef = useMath([question, answers]);
+
   if (!question) return null;
   const currentType = getQuestionTypeMeta(question.type);
 
   return (
-    <div className="flex-1 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_4px_24px_rgb(0,0,0,0.06)]">
+    <div 
+      ref={containerRef}
+      className="flex-1 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_4px_24px_rgb(0,0,0,0.06)]"
+    >
       {/* Top accent strip */}
       <div className="h-1 w-full bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-500" />
 

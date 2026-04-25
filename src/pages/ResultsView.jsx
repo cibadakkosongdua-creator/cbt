@@ -11,9 +11,11 @@ import Button from "../ui/Button";
 import { DEFAULT_EXAM_CONFIG } from "../lib/examConfig";
 import { getQuestionTypeMeta } from "../lib/uiMeta";
 import Certificate from "../components/Certificate";
+import { useMath } from "../lib/utils";
 
 const ResultsView = ({ resultId }) => {
   const navigate = useNavigate();
+  const containerRef = useMath();
   const [result, setResult] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -187,7 +189,7 @@ const ResultsView = ({ resultId }) => {
 
   return (
     <Page>
-      <Container className="py-6 pb-10 md:py-10">
+      <Container ref={containerRef} className="py-6 pb-10 md:py-10">
         {/* ── Result Header Card ── */}
         <div
           className={`relative overflow-hidden rounded-2xl shadow-sm mb-8 ${

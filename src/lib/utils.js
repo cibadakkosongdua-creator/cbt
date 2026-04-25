@@ -1,4 +1,55 @@
+import { useEffect, useRef } from "react";
+import katex from "katex";
+import renderMathInElement from "katex/dist/contrib/auto-render";
+
 // ===== UTILITY FUNCTIONS =====
+
+// Render KaTeX in an element
+export const renderMath = (element) => {
+  if (!element) return;
+  try {
+    // 1. Render standard LaTeX with delimiters
+    renderMathInElement(element, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+        { left: "\\(", right: "\\)", display: false },
+        { left: "\\[", right: "\\]", display: true },
+        { left: "\\begin{equation}", right: "\\end{equation}", display: true },
+      ],
+      throwOnError: false,
+    });
+
+    // 2. Render Quill formulas (class="ql-formula")
+    const quillFormulas = element.querySelectorAll('.ql-formula');
+    quillFormulas.forEach(formula => {
+      const latex = formula.getAttribute('data-value') || formula.textContent;
+      if (latex) {
+        try {
+          katex.render(latex, formula, {
+            throwOnError: false,
+            displayMode: formula.tagName === 'DIV'
+          });
+        } catch (e) {
+          console.error("Quill formula render error:", e);
+        }
+      }
+    });
+  } catch (err) {
+    console.error("KaTeX rendering error:", err);
+  }
+};
+
+// Hook for rendering math in a component
+export const useMath = (dependencies = []) => {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (ref.current) {
+      renderMath(ref.current);
+    }
+  }, dependencies);
+  return ref;
+};
 
 // Shuffle array menggunakan Fisher-Yates
 export const shuffleArray = (array) => {

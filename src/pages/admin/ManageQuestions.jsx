@@ -15,6 +15,7 @@ import { useAuthStore } from "../../store/authStore";
 import { motion, AnimatePresence } from "framer-motion";
 import ContextMenu from "../../ui/ContextMenu";
 import QuestionForm from "./QuestionForm";
+import { useMath } from "../../lib/utils";
 
 import katex from "katex";
 import "katex/dist/katex.min.css";
@@ -22,6 +23,7 @@ window.katex = katex;
 
 const ManageQuestions = () => {
   const { user } = useAuthStore();
+  const previewRef = useMath([previewQuestion]);
   const [questions, setQuestions] = useState([]);
   const [filteredQuestions, setFilteredQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -950,6 +952,7 @@ Catatan: answer adalah index (0-3) dari pilihan yang benar. difficulty bisa easy
         {previewQuestion && (
           <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-4 overflow-y-auto">
             <motion.div 
+              ref={previewRef}
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
